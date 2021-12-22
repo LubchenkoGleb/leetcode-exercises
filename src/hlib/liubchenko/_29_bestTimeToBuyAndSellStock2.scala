@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _28_destTimeToBuyAndSellStock2 extends App {
+object _29_bestTimeToBuyAndSellStock2 extends App {
   def maxProfit(prices: Array[Int]): Int = {
     if (prices.length < 2) return 0
 

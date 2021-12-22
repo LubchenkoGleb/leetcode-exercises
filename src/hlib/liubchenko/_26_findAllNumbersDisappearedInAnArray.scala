@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _25_findAllNumbersDisappearedInAnArray extends App {
+object _26_findAllNumbersDisappearedInAnArray extends App {
   def findDisappearedNumbers(nums: Array[Int]): List[Int] = {
     val set = nums.toSet
     (1 to nums.length).filter(i => !set.contains(i)).toList

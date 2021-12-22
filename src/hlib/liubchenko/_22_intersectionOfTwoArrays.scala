@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _21_intersectionOfTwoArrays extends App {
+object _22_intersectionOfTwoArrays extends App {
   def withScalaCheatsIntersection(
       nums1: Array[Int],
       nums2: Array[Int]

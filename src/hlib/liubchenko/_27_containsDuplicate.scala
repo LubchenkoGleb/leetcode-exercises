@@ -2,7 +2,7 @@ package hlib.liubchenko
 
 import scala.collection.mutable
 
-object _26_containsDuplicate extends App {
+object _27_containsDuplicate extends App {
   def containsDuplicate(nums: Array[Int]): Boolean = {
     nums.sorted.sliding(2).exists {
       case Array(x, y) => x == y

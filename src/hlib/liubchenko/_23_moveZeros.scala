@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _22_moveZeros extends App {
+object _23_moveZeros extends App {
   def moveZeroes(nums: Array[Int]): Unit = {
     var zerosInARow = 0
     var i = 0

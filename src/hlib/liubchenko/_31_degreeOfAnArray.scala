@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _30_degreeOfAnArray extends App {
+object _31_degreeOfAnArray extends App {
   def findShortestSubArray(nums: Array[Long]): Int = {
     type Count = Int
     type From = Int

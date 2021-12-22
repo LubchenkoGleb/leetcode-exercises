@@ -2,7 +2,7 @@ package hlib.liubchenko
 
 import scala.collection.mutable.ArrayBuffer
 
-object _27_romanToInteger extends App {
+object _28_romanToInteger extends App {
   def romanToInt(s: String): Int = {
     var i = 0
     val buff = new ArrayBuffer[String]()

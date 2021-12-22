@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _32_mergeTwoSortedLists extends App {
+object _33_mergeTwoSortedLists extends App {
   case class ListNode(_x: Int = 0, _next: ListNode = null) {
     var next: ListNode = _next
     var x: Int = _x

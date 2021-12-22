@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _34_missingNumber extends App {
+object _35_missingNumber extends App {
   def missingNumber(nums: Array[Int]): Int = {
     val ordered = Array.fill(nums.length + 1)(-1)
 

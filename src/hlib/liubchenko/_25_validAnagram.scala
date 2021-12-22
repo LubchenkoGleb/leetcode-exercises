@@ -1,6 +1,6 @@
 package hlib.liubchenko
 
-object _24_validAnagram extends App {
+object _25_validAnagram extends App {
 
   // sort solution = 2n log n + n (memory optimization)
   // map solution = n + n + n (speed optimization)
