@@ -1,4 +1,4 @@
-package hlib.liubchenko.leetcode75.dfs
+package hlib.liubchenko.leetcode75.binary_tree_dfs
 
 import hlib.liubchenko.leetcode75.common.TreeNode
 import org.scalatest.matchers.should.Matchers
