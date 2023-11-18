@@ -1,4 +1,4 @@
-package hlib.liubchenko.leetcode75.db_1d
+package hlib.liubchenko.leetcode75.dp_1d
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
