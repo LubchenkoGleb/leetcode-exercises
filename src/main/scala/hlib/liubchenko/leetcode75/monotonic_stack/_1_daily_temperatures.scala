@@ -32,7 +32,7 @@ class _1_daily_temperatures extends AnyWordSpec with Matchers {
     val stack = mutable.Stack(0)
 
     for (i <- 1 until temperatures.length) {
-      for (j <- stack.popWhile(temperatures(i) > temperatures(_)))x { temperatures(j) = i - j }
+      for (j <- stack.popWhile(temperatures(i) > temperatures(_))) { temperatures(j) = i - j }
       stack.push(i)
     }
     stack.foreach(i => temperatures(i) = 0)
