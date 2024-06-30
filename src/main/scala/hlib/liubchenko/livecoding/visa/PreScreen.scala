@@ -1,4 +1,4 @@
-package hlib.liubchenko.visa
+package hlib.liubchenko.livecoding.visa
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

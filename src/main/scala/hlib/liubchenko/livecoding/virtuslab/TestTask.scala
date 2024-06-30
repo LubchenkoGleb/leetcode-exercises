@@ -1,4 +1,4 @@
-package hlib.liubchenko.test
+package hlib.liubchenko.livecoding.virtuslab
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

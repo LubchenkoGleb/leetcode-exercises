@@ -1,4 +1,4 @@
-package hlib.liubchenko.amazon
+package hlib.liubchenko.livecoding.amazon
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
