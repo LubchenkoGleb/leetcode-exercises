@@ -4,13 +4,6 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class _1_linked_list_cycle extends AnyWordSpec with Matchers {
-
-  // Definition for singly-linked list.
-  class ListNode(var _x: Int = 0) {
-    var next: ListNode = null
-    var x: Int = _x
-  }
-
   def hasCycle(head: ListNode): Boolean = {
     import scala.annotation.tailrec
 
