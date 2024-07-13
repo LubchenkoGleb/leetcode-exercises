@@ -3,7 +3,7 @@ package hlib.liubchenko.topinterview150.backtracking
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class _1_combinations extends AnyWordSpec with Matchers {
+class _2_combinations extends AnyWordSpec with Matchers {
   def combine(n: Int, k: Int): List[List[Int]] = {
     import scala.collection.mutable
 

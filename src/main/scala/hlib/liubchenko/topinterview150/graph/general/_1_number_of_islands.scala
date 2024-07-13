@@ -1,4 +1,4 @@
-package hlib.liubchenko.topinterview150.graph_general
+package hlib.liubchenko.topinterview150.graph.general
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

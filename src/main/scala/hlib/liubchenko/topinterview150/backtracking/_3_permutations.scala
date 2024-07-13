@@ -3,7 +3,7 @@ package hlib.liubchenko.topinterview150.backtracking
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class _2_permutations extends AnyWordSpec with Matchers {
+class _3_permutations extends AnyWordSpec with Matchers {
   def permute(nums: Array[Int]): List[List[Int]] = {
     def loop(rem: Set[Int]): Set[List[Int]] =
       if (rem.size == 1) Set(rem.toList)
