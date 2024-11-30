@@ -1,5 +1,6 @@
-package hlib.liubchenko.topinterview150.binary_tree
+package hlib.liubchenko.topinterview150.binary_tree.search
 
+import hlib.liubchenko.topinterview150.binary_tree.TreeNode
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
