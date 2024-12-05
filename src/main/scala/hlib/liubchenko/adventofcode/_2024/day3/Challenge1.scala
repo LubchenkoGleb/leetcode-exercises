@@ -1,5 +1,6 @@
 package hlib.liubchenko.adventofcode._2024.day3
 
+import hlib.liubchenko.adventofcode._2024.Utils
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -21,18 +22,11 @@ class Challenge1 extends AnyWordSpec with Matchers {
 
   "fixMemory" should {
     "work as expected #1" in {
-      fixMemory(
-        List(
-          "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
-        )
-      ) shouldBe 161
+      fixMemory(List("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))")) shouldBe 161
     }
 
     "work as expected #2" in {
-      val source = Source.fromFile("src/main/scala/hlib/liubchenko/adventofcode/_2024/day3/input1.txt")
-      val input = source.getLines().toList
-      source.close()
-
+      val input = Utils.readInputFile("src/main/scala/hlib/liubchenko/adventofcode/_2024/day3/input.txt")
       fixMemory(input) shouldBe 180233229
     }
   }

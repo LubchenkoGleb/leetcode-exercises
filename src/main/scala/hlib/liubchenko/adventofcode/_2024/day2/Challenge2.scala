@@ -1,5 +1,6 @@
 package hlib.liubchenko.adventofcode._2024.day2
 
+import hlib.liubchenko.adventofcode._2024.Utils
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -43,10 +44,7 @@ class Challenge2 extends AnyWordSpec with Matchers {
     }
 
     "work as expected #2" in {
-      val source = Source.fromFile("src/main/scala/hlib/liubchenko/adventofcode/_2024/day2/input.txt")
-      val input = source.getLines().toList
-      source.close()
-
+      val input = Utils.readInputFile("src/main/scala/hlib/liubchenko/adventofcode/_2024/day2/input.txt")
       findSafeReports(input) shouldBe 459
     }
   }
