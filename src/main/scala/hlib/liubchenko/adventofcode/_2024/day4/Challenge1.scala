@@ -7,23 +7,30 @@ import org.scalatest.wordspec.AnyWordSpec
 class Challenge1 extends AnyWordSpec with Matchers {
   def pageOrdering(input: List[String]): Int = {
     val (rules, pageNumbers) = input.span(_.nonEmpty)
-    val rulesMap = rules
+    val numbers = rules
       .map(_.split('|'))
       .map { case Array(a, b) => (a.toInt, b.toInt) }
+    val rulesMap = numbers
       .groupMap(_._1)(_._2)
       .view
       .mapValues(_.toSet)
       .toMap
-
-    def validate(line: Array[Int]): Boolean = line.tails
-      .filter { _.length >= 2 }
-      .forall { pages =>
-        val (pageToValidate, nextPages) = (pages.head, pages.tail)
-
-        rulesMap
-          .get(pageToValidate)
-          .fold(false)(allowedPages => nextPages.forall(allowedPages.contains))
+    val orderedNumbersMap = numbers
+      .flatMap { case (a, b) => List(a, b) }
+      .distinct
+      .sortWith { (a, b) =>
+        rulesMap.get(a).exists(_.contains(b))
       }
+      .zipWithIndex
+      .toMap
+
+    def validate(line: Array[Int]): Boolean = {
+      val res = line.sliding(2).forall { case Array(a, b) =>
+        if(orderedNumbersMap.contains(a) && orderedNumbersMap.contains(b)) orderedNumbersMap(a) < orderedNumbersMap(b)
+        else true
+      }
+      res
+    }
 
     pageNumbers
       .filter(_.nonEmpty)
