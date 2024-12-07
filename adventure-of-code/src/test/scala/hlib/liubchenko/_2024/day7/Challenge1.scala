@@ -1,4 +1,4 @@
-package hlib.liubchenko._2024.day6
+package hlib.liubchenko._2024.day7
 
 import hlib.liubchenko._2024.Utils
 import org.scalatest.matchers.should.Matchers

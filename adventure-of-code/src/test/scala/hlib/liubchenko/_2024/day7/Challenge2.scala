@@ -1,4 +1,4 @@
-package hlib.liubchenko._2024.day6
+package hlib.liubchenko._2024.day7
 
 import hlib.liubchenko._2024.Utils
 import org.scalatest.matchers.should.Matchers
@@ -6,7 +6,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.annotation.tailrec
 
-class Challenge1 extends AnyWordSpec with Matchers {
+class Challenge2 extends AnyWordSpec with Matchers {
   def findRoute(lines: List[String]): Int = {
     val map = lines.map(_.toArray).toArray
 
@@ -46,12 +46,14 @@ class Challenge1 extends AnyWordSpec with Matchers {
       }
       if (nextI < 0 || nextI > map.length - 1 || nextJ < 0 || nextJ > map(0).length - 1) isExit = true
       else move(nextI, nextJ)
+
+      //println(map.map(_.mkString).mkString("\n") + "\n")
     }
 
     map.map(_.count(_ == 'x')).sum + 1
   }
 
-  "Day #6 Challenge #1 findRoute" should {
+  "Day #6 Challenge #2 findRoute" should {
     "work as expected #1" in {
       findRoute(
         List(
@@ -71,7 +73,7 @@ class Challenge1 extends AnyWordSpec with Matchers {
 
     "work as expected #2" in {
       val input = Utils.readInputFile(6)
-      findRoute(input) shouldBe 4819
+      findRoute(input) shouldBe 0
     }
   }
 }
