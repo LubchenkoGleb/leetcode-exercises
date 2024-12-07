@@ -20,36 +20,40 @@ class Challenge2 extends AnyWordSpec with Matchers {
     val (initialI, initialJ) = search(0, 0).get
     val initialDirection = map(initialI)(initialJ)
 
-    def checkLoop() = {
-//      println("before:\n" + map.map(_.mkString).mkString("\n"))
+    val iterator = for {
+      i <- map.indices
+      j <- map.head.indices
+      if map(i)(j) == '.'
+    } yield (i, j)
 
-      var (i, j) = (initialI, initialJ)
-      var direction = initialDirection
-      var (isExit, isLoop) = (false, false)
-      updateCurrentPosition(i, j)
+    iterator.count { case (i, j) =>
+      map(i)(j) = '0'
+      checkLoop(initialI, initialJ, initialDirection, map)
+    }
+  }
 
-      def updateCurrentPosition(nextI: Int, nextJ: Int): Unit =
-        if (map(nextI)(nextJ) != '#' && map(nextI)(nextJ) != '0') {
-          map(i)(j) = {
-            direction match {
-              case '^' | 'v' =>
-                map(i)(j) match {
-                  case '-' => '+'
-                  case '+' => isLoop = true; '+'
-                  case _   => '|'
-                }
-              case '<' | '>' =>
-                map(i)(j) match {
-                  case '|' => '+'
-                  case '+' => isLoop = true; '+'
-                  case _   => '-'
-                }
-            }
-          }
-        }
+  def checkLoop(initialI: Int, initialJ: Int, initialDirection: Char, map: Array[Array[Char]]): Boolean = {
+    var (i, j, direction) = (initialI, initialJ, initialDirection)
+    var isExit = false
+    val visited = collection.mutable.Set.empty[(Int, Int, Char)]
 
-      def move(nextI: Int, nextJ: Int): Unit = {
-        updateCurrentPosition(nextI, nextJ)
+    def resetMap(): Unit = for {
+      i <- map.indices
+      j <- map.head.indices
+      if map(i)(j) != '#'
+    } map(i)(j) = '.'
+
+    while (!isExit && !visited.contains(i, j, direction)) {
+      val (nextI, nextJ) = direction match {
+        case '^' => (i - 1, j)
+        case '>' => (i, j + 1)
+        case '<' => (i, j - 1)
+        case 'v' => (i + 1, j)
+      }
+
+      if (nextI < 0 || nextI > map.length - 1 || nextJ < 0 || nextJ > map(0).length - 1) isExit = true
+      else {
+        visited.add((i, j, direction))
         map(nextI)(nextJ) match {
           case '#' | '0' =>
             direction = direction match {
@@ -62,46 +66,11 @@ class Challenge2 extends AnyWordSpec with Matchers {
             i = nextI; j = nextJ
         }
       }
-
-      while (!isExit && !isLoop) {
-//        if(map(6)(3) == '0')
-//          println(s"debug: map($i)($j)=${map(i)(j)}, direction: $direction\n" + map.map(_.mkString).mkString("\n") + s"\nloop: $isLoop\n")
-
-        val (nextI, nextJ) = direction match {
-          case '^' => (i - 1, j)
-          case '>' => (i, j + 1)
-          case '<' => (i, j - 1)
-          case 'v' => (i + 1, j)
-        }
-        if (nextI < 0 || nextI > map.length - 1 || nextJ < 0 || nextJ > map(0).length - 1) isExit = true
-        else move(nextI, nextJ)
-      }
-
-      if (isLoop) println("after:\n" + map.map(_.mkString).mkString("\n") + s"\nloop: $isLoop\n")
-      resetMap()
-
-      isLoop
     }
 
-    def resetMap(): Unit = {
-      for {
-        i <- map.indices
-        j <- map.head.indices
-        if map(i)(j) != '#'
-      } map(i)(j) = '.'
-      map(initialI)(initialJ) = initialDirection
-    }
+    resetMap()
 
-    val res = for {
-      i <- map.indices
-      j <- map.head.indices
-      if map(i)(j) == '.'
-    } yield {
-      map(i)(j) = '0'
-      checkLoop()
-    }
-
-    res.count(identity)
+    visited.contains(i, j, direction)
   }
 
   "Day #6 Challenge #2 findRoute" should {
@@ -119,12 +88,28 @@ class Challenge2 extends AnyWordSpec with Matchers {
           "#.........",
           "......#..."
         )
-      ) shouldBe 41
+      ) shouldBe 6
+    }
+
+    "checkLoop #1" in {
+      val map = List(
+        "....#.....",
+        ".........#",
+        "..........",
+        "..#.......",
+        ".......#..",
+        "..........",
+        ".#..^.....",
+        "........#.",
+        "#0........",
+        "......#..."
+      ).map(_.toArray).toArray
+      checkLoop(6, 4, '^', map) shouldBe true
     }
 
     "work as expected #2" in {
       val input = Utils.readInputFile(6)
-      findRoute(input) shouldBe 0
+      findRoute(input) shouldBe 1796
     }
   }
 }
