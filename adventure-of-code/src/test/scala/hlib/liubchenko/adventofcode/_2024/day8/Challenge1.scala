@@ -1,10 +1,10 @@
-package hlib.liubchenko._2024.day8
+package hlib.liubchenko.adventofcode._2024.day8
 
-import hlib.liubchenko._2024.Utils
+import hlib.liubchenko.adventofcode._2024.Utils
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class Challenge2 extends AnyWordSpec with Matchers {
+class Challenge1 extends AnyWordSpec with Matchers {
   def countAntinodes(lines: List[String]): Int = {
     val map = lines.map(_.toArray).toArray
 
@@ -18,21 +18,12 @@ class Challenge2 extends AnyWordSpec with Matchers {
       val (leftX, rightX, xDiff) = (math.min(x1, x2), math.max(x1, x2), math.abs(x1 - x2))
       val (topY, bottomY, yDiff) = (math.min(y1, y2), math.max(y1, y2), math.abs(y1 - y2))
 
-      def move(y: Int, x: Int, yBy: Int, xBy: Int) = {
-        (y + yDiff * yBy, x + xDiff * xBy)
-      }
+      val possibleAntinodes =
+        if ((leftX, topY) == (x1, y1) || (leftX, topY) == (x2, y2))
+          List((topY - yDiff, leftX - xDiff), (bottomY + yDiff, rightX + xDiff))
+        else List((topY - yDiff, rightX + xDiff), (bottomY + yDiff, leftX - xDiff))
 
-      def generate(y: Int, x: Int, yBy: Int, xBy: Int): List[(Int, Int)] = {
-        if (y < 0 || y >= map.length || x < 0 || x >= map.head.length) Nil
-        else {
-          val (nextY, nextX) = move(y, x, yBy, xBy)
-          (y, x) :: generate(nextY, nextX, yBy, xBy)
-        }
-      }
-
-      if ((leftX, topY) == (x1, y1) || (leftX, topY) == (x2, y2))
-        generate(topY, leftX, -1, -1) ::: generate(bottomY, rightX, 1, 1)
-      else generate(topY, rightX, -1, 1) ::: generate(bottomY, leftX, 1, -1)
+      possibleAntinodes.filter { case (y, x) => y >= 0 && y < map.length && x >= 0 && x < map.head.length }
     }
 
     antennas
@@ -61,12 +52,12 @@ class Challenge2 extends AnyWordSpec with Matchers {
           "............",
           "............"
         )
-      ) shouldBe 34
+      ) shouldBe 14
     }
 
     "work as expected #2" in {
       val input = Utils.readInputFile(8)
-      countAntinodes(input) shouldBe 1045
+      countAntinodes(input) shouldBe 303
     }
   }
 }

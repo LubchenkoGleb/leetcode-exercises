@@ -1,4 +1,4 @@
-package hlib.liubchenko._2024
+package hlib.liubchenko.adventofcode._2024
 
 import scala.io.Source
 import scala.util.Using

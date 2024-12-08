@@ -1,7 +1,7 @@
-package hlib.liubchenko._2024.day1
+package hlib.liubchenko.adventofcode._2024.day1
 
-import hlib.liubchenko._2024.Utils
-import hlib.liubchenko._2024.Utils.inputFilePath
+import hlib.liubchenko.adventofcode._2024.Utils.inputFilePath
+import hlib.liubchenko.adventofcode._2024.Utils
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

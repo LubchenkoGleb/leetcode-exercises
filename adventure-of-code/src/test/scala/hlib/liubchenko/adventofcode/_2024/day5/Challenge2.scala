@@ -1,6 +1,6 @@
-package hlib.liubchenko._2024.day5
+package hlib.liubchenko.adventofcode._2024.day5
 
-import hlib.liubchenko._2024.Utils
+import hlib.liubchenko.adventofcode._2024.Utils
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
