@@ -8,6 +8,6 @@ object Utils {
   def readInputFileAsString(day: Int): String = readInputFile(day).mkString
 
   private def inputFilePath(day: Int): String = {
-    s"/Users/macbookpro/Projects/leetcode-exercises/adventure-of-code/src/test/scala/hlib/liubchenko/_2024/day$day/input.txt"
+    s"adventure-of-code/src/test/scala/hlib/liubchenko/adventofcode/_2024/day$day/input.txt"
   }
 }

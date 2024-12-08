@@ -7,56 +7,24 @@ import org.scalatest.wordspec.AnyWordSpec
 class Challenge2 extends AnyWordSpec with Matchers {
   def pageOrdering(input: List[String]): Int = {
     val (rules, pageNumbers) = input.span(_.nonEmpty)
-    val rulesMap = rules
+
+    val parsedRules = rules
       .map(_.split('|'))
+      .map { a => println(a.toList); a }
       .map { case Array(a, b) => (a.toInt, b.toInt) }
-      .groupMap(_._1)(_._2)
-      .view
-      .mapValues(_.toSet)
-      .toMap
+      .toSet
 
-    def validate(line: Array[Int]): Boolean = line.tails
-      .filter { _.length >= 2 }
-      .forall { findWrongElement(_).isEmpty }
+    def orderPages(row: Array[Int]) = row.sortWith { (a, b) => parsedRules.contains((a, b)) }
 
-    def findWrongElement(line: Array[Int]): Option[Int] = {
-      val (pageToValidate, nextPages) = (line.head, line.tail)
-      rulesMap.get(pageToValidate) match {
-        case Some(allowedPages) => nextPages.find(p => !allowedPages.contains(p))
-        case None               => Some(pageToValidate)
-      }
-    }
+    def validate(line: Array[Int]): Boolean =
+      line.sliding(2).forall { case Array(a, b) => parsedRules.contains((a, b)) }
 
     pageNumbers
       .filter(_.nonEmpty)
       .map(_.split(',').map(_.toInt))
       .filterNot(validate)
-      .map { line =>
-        var i = 0
-
-        def replace(wrongElementValue: Int): Unit = {
-          val wrongElementIndex = line.indexOf(wrongElementValue)
-          line(wrongElementIndex) = line(i)
-          line(i) = wrongElementValue
-        }
-
-        while (i <= line.length - 1) {
-          findWrongElement(line.drop(i)) match {
-            case Some(wrongElementValue) if wrongElementValue != line(i) => replace(wrongElementValue)
-            case Some(wrongElementValue) =>
-              line
-                .drop(i + 1)
-                .find { rulesMap.get(_).toSet.flatten.contains(wrongElementValue) } match {
-                case Some(value) => replace(value)
-                case None        => i += 1
-              }
-            case None => i += 1
-          }
-
-        }
-
-        line(line.length / 2)
-      }
+      .map(orderPages)
+      .map { line => line(line.length / 2) }
       .sum
   }
 
@@ -93,7 +61,7 @@ class Challenge2 extends AnyWordSpec with Matchers {
     }
 
     "Day #5 Challenge #2" in {
-      val input = Utils.readInputFile(4)
+      val input = Utils.readInputFile(5)
       pageOrdering(input) shouldBe 5093
     }
   }

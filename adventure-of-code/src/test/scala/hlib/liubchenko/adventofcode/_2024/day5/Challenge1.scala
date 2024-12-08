@@ -11,28 +11,10 @@ class Challenge1 extends AnyWordSpec with Matchers {
     val parsedRules = rules
       .map(_.split('|'))
       .map { case Array(a, b) => (a.toInt, b.toInt) }
-    val tmp = parsedRules.flatMap{case (a, b) => List(a,b)}.distinct
-
-    val rulesMap = parsedRules
-      .groupMap(_._2)(_._1)
-      .view
-      .mapValues(_.toSet)
-      .toMap
-
-    def orderPages(remainingRules: Map[Int, Set[Int]]): List[Int] =
-      if (remainingRules.isEmpty) Nil
-      else {
-        val pagesToOrder = remainingRules.flatMap { case (k, v) => v + k }.toSet
-        val nextPageMaybe = pagesToOrder.find(p => !remainingRules.contains(p) || remainingRules(p).isEmpty)
-        val nextPage = nextPageMaybe.get
-        val updatedRules = remainingRules.view.mapValues(_ - nextPage).toMap - nextPage
-        nextPage :: orderPages(updatedRules)
-      }
-
-    val orderedPages = orderPages(rulesMap).zipWithIndex.toMap
+      .toSet
 
     def validate(line: Array[Int]): Boolean =
-      line.sliding(2).forall { case Array(a, b) => orderedPages(a) < orderedPages(b) }
+      line.sliding(2).forall { case Array(a, b) => parsedRules.contains((a, b)) }
 
     pageNumbers
       .filter(_.nonEmpty)
@@ -44,7 +26,6 @@ class Challenge1 extends AnyWordSpec with Matchers {
 
   "Day #5 Challenge #1" should {
     "work as expected #1" in {
-      // 97|75|47|61|53|29|13
       pageOrdering("""47|53
           |97|13
           |97|61
