@@ -19,7 +19,7 @@ class Challenge2 extends AnyWordSpec with Matchers {
     }
     ._2
 
-  "Day #3 Challenge #2 fixMemory" should {
+  "Day #3 Challenge #2" should {
     "work as expected #1" in {
       fixMemory("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))") shouldBe 48
     }

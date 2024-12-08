@@ -13,7 +13,7 @@ class Challenge1 extends AnyWordSpec with Matchers {
     l1.sorted.zip(l2.sorted).map { case (a, b) => math.abs(a - b) }.sum
   }
 
-  "Day #1 Challenge #1 findDistance" should {
+  "Day #1 Challenge #1" should {
     "work as expected #1" in {
       findDistance(
         List(

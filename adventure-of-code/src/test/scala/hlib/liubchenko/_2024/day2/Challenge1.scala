@@ -23,7 +23,7 @@ class Challenge1 extends AnyWordSpec with Matchers {
       .sum
   }
 
-  "Day #2 Challenge #1 findSafeReports" should {
+  "Day #2 Challenge #1" should {
     "work as expected #1" in {
       findSafeReports(
         List(

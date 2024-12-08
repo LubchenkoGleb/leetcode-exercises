@@ -13,7 +13,7 @@ class Challenge2 extends AnyWordSpec with Matchers {
     l1.map(n => l2Map.get(n).map(n * _).getOrElse(0)).sum
   }
 
-  "Day #1 Challenge #2 findSimilarityScore" should {
+  "Day #1 Challenge #2" should {
     "work as expected #1" in {
       findSimilarityScore(
         List(

@@ -73,7 +73,7 @@ class Challenge2 extends AnyWordSpec with Matchers {
     visited.contains(i, j, direction)
   }
 
-  "Day #6 Challenge #2 findRoute" should {
+  "Day #6 Challenge #2" should {
     "work as expected #1" in {
       findRoute(
         List(

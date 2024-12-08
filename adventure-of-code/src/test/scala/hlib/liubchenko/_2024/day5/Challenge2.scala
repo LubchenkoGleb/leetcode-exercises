@@ -92,7 +92,7 @@ class Challenge2 extends AnyWordSpec with Matchers {
                      |97,13,75,29,47""".stripMargin.split("\n").toList) shouldBe 123
     }
 
-    "work as expected #2" in {
+    "Day #5 Challenge #2" in {
       val input = Utils.readInputFile(4)
       pageOrdering(input) shouldBe 5093
     }

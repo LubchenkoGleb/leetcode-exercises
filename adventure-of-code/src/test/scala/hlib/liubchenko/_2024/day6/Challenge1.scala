@@ -51,7 +51,7 @@ class Challenge1 extends AnyWordSpec with Matchers {
     map.map(_.count(_ == 'x')).sum + 1
   }
 
-  "Day #6 Challenge #1 findRoute" should {
+  "Day #6 Challenge #1" should {
     "work as expected #1" in {
       findRoute(
         List(
