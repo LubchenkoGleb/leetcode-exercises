@@ -6,32 +6,6 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class Challenge1 extends AnyWordSpec with Matchers {
   def winPrize(lines: List[String]): Int = {
-    def calc_v2(aX: Int, aY: Int, bX: Int, bY: Int, prizeX: Int, prizeY: Int): Int = {
-      val winningCombinations = for {
-        n1 <- 0 to 100
-        n2 <- 0 to 100
-        if aX * n1 + bX * n2 == prizeX && aY * n1 + bY * n2 == prizeY
-        _ = println(s"n1: $n1, n2: $n2")
-      } yield n1 * 3 + n2
-
-      winningCombinations.minOption.getOrElse(0)
-    }
-
-    def calc(aX: Float, aY: Float, bX: Float, bY: Float, prizeX: Float, prizeY: Float): Int = {
-      val n2 = (prizeY - (aY * (prizeX / aX)) + (aY * bX / aX)) / (bY - (aY * bX / aX))
-      val n1 = (prizeX - bX * n2) / aX
-      val (rN1, rN2) = (math.round(n1), math.round(n2))
-
-      val isValid = rN1 <= 100 &&
-        rN2 <= 100 &&
-        aX * rN1 + bX * rN2 == prizeX &&
-        aY * rN1 + bY * rN2 == prizeY
-      println(s"n1: $n1, n2: $n2, isValid: $isValid")
-
-      if (isValid) rN1 * 3 + rN2 else 0
-    }
-
-
     val aR = "Button A: X\\+(\\d+), Y\\+(\\d+)".r
     val bR = "Button B: X\\+(\\d+), Y\\+(\\d+)".r
     val prizeR = "Prize: X=(\\d+), Y=(\\d+)".r
@@ -40,23 +14,25 @@ class Challenge1 extends AnyWordSpec with Matchers {
       .sliding(3, 4)
       .map { case aR(aX, aY) :: bR(bX, bY) :: prizeR(prizeX, prizeY) :: Nil =>
         // calc(aX.toInt, aY.toInt, bX.toInt, bY.toInt, prizeX.toInt, prizeY.toInt)
-         calc(aX.toFloat, aY.toFloat, bX.toFloat, bY.toFloat, prizeX.toFloat, prizeY.toFloat)
+        solveEquations(aX.toInt, aY.toInt, bX.toInt, bY.toInt, prizeX.toInt, prizeY.toInt)
       }
       .sum
   }
 
-  def calc_v1(aX: Float, aY: Float, bX: Float, bY: Float, prizeX: Float, prizeY: Float): Int = {
-    val n2 = (prizeY - (aY * (prizeX / aX)) + (aY * bX / aX)) / (bY - (aY * bX / aX))
-    val n1 = (prizeX - bX * n2) / aX
-    val (rN1, rN2) = (math.round(n1), math.round(n2))
+  def solveEquations(aX: Int, aY: Int, bX: Int, bY: Int, prizeX: Int, prizeY: Int): Int = {
+    // Coefficients for the transformed equation
+    val A = bY * aX - bX * aY
+    val B = prizeY * aX - prizeX * aY
 
-    val isValid = rN1 <= 100 &&
-      rN2 <= 100 &&
-      aX * rN1 + bX * rN2 == prizeX &&
-      aY * rN1 + bY * rN2 == prizeY
-    println(s"n1: $n1, n2: $n2, isValid: $isValid")
+    // Check if A divides B
+    if (A == 0 || B % A != 0) 0
+    else {
+      val n2 = B / A
+      val n1 = (prizeX - bX * n2) / aX
 
-    if (isValid) rN1 * 3 + rN2 else 0
+      if (aX * n1 + bX * n2 == prizeX && aY * n1 + bY * n2 == prizeY) n1 * 3 + n2
+      else 0
+    }
   }
 
   "Day #13 Challenge #1" should {

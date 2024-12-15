@@ -5,23 +5,25 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class Challenge2 extends AnyWordSpec with Matchers {
-  // private val shift = 10000000000000L
-  private val shift = 0L
+  private val shift = 10000000000000L
+
+  def solveEquations(aX: Int, aY: Int, bX: Int, bY: Int, prizeX: Long, prizeY: Long): Long = {
+    // Coefficients for the transformed equation
+    val A = bY * aX - bX * aY
+    val B = prizeY * aX - prizeX * aY
+
+    // Check if A divides B
+    if (A == 0 || B % A != 0) 0
+    else {
+      val n2 = B / A
+      val n1 = (prizeX - bX * n2) / aX
+
+      if (aX * n1 + bX * n2 == prizeX && aY * n1 + bY * n2 == prizeY) n1 * 3 + n2
+      else 0
+    }
+  }
 
   def winPrize(lines: List[String]): Long = {
-    def calc(aX: Int, aY: Int, bX: Int, bY: Int, prizeX: Long, prizeY: Long): Long = {
-      val minStep = (shift + math.max(prizeX, prizeY)) / List(aX, bX, aY, bY).min
-
-      val winningCombinations = for {
-        n1 <- 0L to minStep
-        n2 <- 0L to minStep
-        if aX * n1 + bX * n2 == prizeX && aY * n1 + bY * n2 == prizeY
-        _ = println(s"n1: $n1, n2: $n2")
-      } yield n1 * 3 + n2
-
-      winningCombinations.minOption.getOrElse(0)
-    }
-
     val aR = "Button A: X\\+(\\d+), Y\\+(\\d+)".r
     val bR = "Button B: X\\+(\\d+), Y\\+(\\d+)".r
     val prizeR = "Prize: X=(\\d+), Y=(\\d+)".r
@@ -29,7 +31,7 @@ class Challenge2 extends AnyWordSpec with Matchers {
     lines
       .sliding(3, 4)
       .map { case aR(aX, aY) :: bR(bX, bY) :: prizeR(prizeX, prizeY) :: Nil =>
-        calc(aX.toInt, aY.toInt, bX.toInt, bY.toInt, prizeX.toLong + shift, prizeY.toLong + shift)
+        solveEquations(aX.toInt, aY.toInt, bX.toInt, bY.toInt, prizeX.toLong + shift, prizeY.toLong + shift)
       }
       .sum
   }
@@ -54,12 +56,12 @@ class Challenge2 extends AnyWordSpec with Matchers {
           "Button B: X+27, Y+71",
           "Prize: X=18641, Y=10279"
         )
-      ) shouldBe 480
+      ) shouldBe 875318608908L
     }
 
     "work as expected #2" in {
       val input = Utils.readInputFile(13)
-      winPrize(input) shouldBe 27105
+      winPrize(input) shouldBe 101726882250942L
     }
   }
 }
