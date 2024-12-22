@@ -15,17 +15,21 @@ class Challenge2 extends AnyWordSpec with Matchers {
     .sum
 
   def enterCode(code: String): Long = {
-    def loop(level: Int)(code: String): Long = {
-      println(s"level: $level, code: $code")
-      if (level == 25) code.length
-      else {
-        val codes = navigateDirectionalKeypad(code)
-        codes.map(loop(level + 1)).min
-      }
-    }
-
-    navigateNumericKeypad(code).map { loop(1) }.min
+    navigateNumericKeypad(code).map { navigateDirectionalKeypad(_, 2) }.min
   }
+
+//  def enterDirectionalKeypadCode(code: String) = {
+//    val acc = collection.mutable.Map.empty[(String, Long), Long]
+//
+//    def loop(level: Int)(code: String): Long = {
+//      println(s"level: $level, code: $code")
+//      if (level == 25) code.length
+//      else {
+//        val codes = navigateDirectionalKeypad(code)
+//        codes.map(loop(level + 1)).min
+//      }
+//    }
+//  }
 
   def navigateNumericKeypad(code: String, x: Int = 2, y: Int = 3): List[String] = if (code.isEmpty) List("")
   else {
@@ -60,41 +64,91 @@ class Challenge2 extends AnyWordSpec with Matchers {
     } yield move + "A" + rem
   }
 
-  def navigateDirectionalKeypad(code: String, x: Int = 2, y: Int = 0): List[String] = if (code.isEmpty) List("")
-  else {
-    val (targetX, targetY) = code.head match {
-      case 'A' => (2, 0)
-      case '^' => (1, 0)
-      case 'v' => (1, 1)
-      case '<' => (0, 1)
-      case '>' => (2, 1)
-    }
+  def navigateDirectionalKeypad(code: String, level: Int): Long = if (level == 0) code.length
+  else
+    code
+      .foldLeft(('A', 0L)) { case ((curr, acc), target) =>
+        def cord(c: Char) = c match {
+          case 'A' => (2, 0)
+          case '^' => (1, 0)
+          case 'v' => (1, 1)
+          case '<' => (0, 1)
+          case '>' => (2, 1)
+        }
 
-    val yDirection = if (targetY < y) "^" else "v"
-    val yMoves = Seq.fill(math.abs(targetY - y))(yDirection).mkString
+        val (x, y) = cord(curr)
+        val (targetX, targetY) = cord(target)
 
-    val xDirection = if (targetX < x) "<" else ">"
-    val xMoves = Seq.fill(math.abs(targetX - x))(xDirection).mkString
+        val yDirection = if (targetY < y) "^" else "v"
+        val yMoves = Seq.fill(math.abs(targetY - y))(yDirection).mkString
 
-    val moves =
-      if (x == 0 && targetY == 0) List(xMoves + yMoves)
-      else if (y == 0 && targetX == 0) List(yMoves + xMoves)
-      else List(yMoves + xMoves, xMoves + yMoves).distinct
+        val xDirection = if (targetX < x) "<" else ">"
+        val xMoves = Seq.fill(math.abs(targetX - x))(xDirection).mkString
 
-    for {
-      rem <- navigateDirectionalKeypad(code.tail, targetX, targetY)
-      move <- moves
-    } yield move + "A" + rem
-  }
+        val moves =
+          if (x == 0 && targetY == 0) List(xMoves + yMoves)
+          else if (y == 0 && targetX == 0) List(yMoves + xMoves)
+          else List(yMoves + xMoves, xMoves + yMoves).distinct
+
+        val res = moves.map(_ + "A").map { navigateDirectionalKeypad(_, level - 1) }
+        (target, acc + res.min)
+      }
+      ._2
 
   "Day #21 Challenge #2" should {
     "work as expected #1" in {
+      // Code:
+      // +---+---+---+
+      // | 7 | 8 | 9 |
+      // +---+---+---+
+      // | 4 | 5 | 6 |
+      // +---+---+---+
+      // | 1 | 2 | 3 |
+      // +---+---+---+
+      //     | 0 | A | <
+      //     +---+---+
+      //     +---+---+
+      //  L2 | ^ | A | <(v<<A)
+      // +---+---+---+
+      // | < | v | > |
+      // +---+---+---+
+      //     +---+---+
+      //  L1 | ^ | A | v(v<A) <(<A) <(A)
+      // +---+---+---+
+      // | < | v | > |
+      // +---+---+---+
+      //     +---+---+
+      //   I | ^ | A |
+      // +---+---+---+
+      // | < | v | > |   v<A<A
+      // +---+---+---+
       enterCodes(List.empty) shouldBe 0
     }
 
     "work as expected #2" in {
       val input = Utils.readInputFile(21)
       enterCodes(input) shouldBe 0
+    }
+  }
+
+  "navigateDirectionalKeypad" should {
+    "work as expected" in {
+      navigateDirectionalKeypad("<", 1) shouldBe 4
+//      navigateDirectionalKeypad("<", 2) shouldBe 10 // v<A<AA
+//      navigateDirectionalKeypad("<", 3) shouldBe 26 // v<A<AA
+//      navigateDirectionalKeypad("<", 4) shouldBe 60 // v<A<AA
+//      navigateDirectionalKeypad("<", 5) shouldBe 150 // v<A<AA
+//      navigateDirectionalKeypad("<", 6) shouldBe 368 // v<A<AA
+//      navigateDirectionalKeypad("<", 7) shouldBe 916 // v<A<AA
+//      navigateDirectionalKeypad("<", 8) shouldBe 2282 // v<A<AA
+//      navigateDirectionalKeypad("<", 9) shouldBe 5664 // v<A<AA
+//      navigateDirectionalKeypad("<", 10) shouldBe 14116 // v<A<AA
+//      navigateDirectionalKeypad("<", 11) shouldBe 35068 // v<A<AA
+//      navigateDirectionalKeypad("<", 12) shouldBe 87302 // v<A<AA
+//      navigateDirectionalKeypad("<", 13) shouldBe 217086 // v<A<AA
+//      navigateDirectionalKeypad("<", 14) shouldBe 540120 // v<A<AA
+      navigateDirectionalKeypad("<", 15) shouldBe 1343548 // v<A<AA
+      navigateDirectionalKeypad("<A^A>^^AvvvA", 2) shouldBe 68
     }
   }
 }

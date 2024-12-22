@@ -129,6 +129,11 @@ class Challenge1 extends AnyWordSpec with Matchers {
   }
 
   "navigateDirectionalKeyPad" should {
+    "work as expected #0" in {
+      navigateDirectionalKeypad("<").flatMap(navigateDirectionalKeypad(_)) should contain theSameElementsAs
+        List("v<A<AA>>^A", "<vA<AA>>^A")
+    }
+
     "work as expected #1" in {
       val expected = List(
         "v<<A>>^A<A>AvA^<AA>Av<AAA^>A",
