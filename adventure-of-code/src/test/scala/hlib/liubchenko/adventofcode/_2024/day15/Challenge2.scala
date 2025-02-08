@@ -7,70 +7,106 @@ import org.scalatest.wordspec.AnyWordSpec
 class Challenge2 extends AnyWordSpec with Matchers {
   def moveBoxes(input: Array[String]): Int = {
     val (mapLines, commandsLines) = input.span(_.nonEmpty)
-    val (map, commands) = (mapLines.map(_.toArray), commandsLines.tail.flatMap(_.toArray))
+    val map = mapLines.map(_.flatMap {
+      case '@' => s"@."
+      case 'O' => s"[]"
+      case c   => s"$c$c"
+    }.toArray)
+    val commands = commandsLines.tail.flatMap(_.toArray)
     val (height, width) = (map.length, map.head.length)
-
     var (robotI, robotJ) = (for { i <- 0 until height; j <- 0 until width if map(i)(j) == '@' } yield (i, j)).head
 
+    def printMap(): Unit = map.map(_.mkString).foreach(println)
+    printMap()
+    println(s"robot[$robotI, $robotJ]")
+
     def move(command: Char): Unit = {
-      def moveToDirection(iChange: Int, jChange: Int): Unit = {
-        def moveHead(): Unit = {
-          map(robotI)(robotJ) = '.'
-          map(robotI + iChange)(robotJ + jChange) = '@'
-          robotI += iChange
-          robotJ += jChange
-        }
+      def moveHead(iChange: Int, jChange: Int): Unit = {
+        map(robotI)(robotJ) = '.'
+        map(robotI + iChange)(robotJ + jChange) = '@'
+        robotI += iChange
+        robotJ += jChange
+      }
 
-        if (map(robotI + iChange)(robotJ + jChange) == '.') moveHead()
-        else if (map(robotI + iChange)(robotJ + jChange) == 'O') {
-          val nextI = (
-            if (iChange > 0) robotI + 1 until height
-            else if (iChange < 0) robotI - 1 to 0 by -1
-            else List(robotI)
-            ).find { map(_)(robotJ) != 'O' }.get
+      def isBox(v: Char) = Set('[', ']').contains(v)
 
-          val nextJ = (
-            if (jChange > 0) robotJ + 1 until width
-            else if (jChange < 0) robotJ - 1 to 0 by -1
-            else List(robotJ)
-            ).find { map(robotI)(_) != 'O' }.get
+      def moveHorizontally(jChange: Int): Unit = {
+        val next = map(robotI)(robotJ + jChange)
 
-          map(nextI)(nextJ) match {
-            case '.' => map(nextI)(nextJ) = 'O'; moveHead()
-            case _   => ()
+        if (next == '.') moveHead(0, jChange)
+        else if (isBox(next)) {
+          val nextJ = { if (jChange > 0) robotJ + 1 until width else robotJ - 1 to 0 by -1 }.find { j =>
+            !isBox(map(robotI)(j))
+          }.get
+
+          if (map(robotI)(nextJ) == '.') {
+            val step = if (jChange > 0) -1 else 1
+            (nextJ to robotJ by step)
+              .sliding(2)
+              .foreach { case Seq(a, b) =>
+                val tmp = map(robotI)(a); map(robotI)(a) = map(robotI)(b); map(robotI)(b) = tmp
+              }
+            robotJ += jChange
           }
         }
       }
 
+      def moveVertically(iChange: Int): Unit = {
+        val next = map(robotI + iChange)(robotJ)
+
+        def ableToMove(i: Int, j: Int): Boolean = map(i)(j) != '#' && {
+          val side =
+            if (map(i + iChange)(j) == '[') ableToMove(i + iChange, j + 1)
+            else if (map(i + iChange)(j) == ']') ableToMove(i + iChange, j - 1)
+            else true
+
+          val main = if (map(i + iChange)(j) != '.') ableToMove(i + iChange, j) else true
+
+          side && main
+        }
+
+        def move(i: Int, j: Int): Unit = {
+          if (map(i + iChange)(j) == '[') move(i + iChange, j + 1)
+          else if (map(i + iChange)(j) == ']') move(i + iChange, j - 1)
+
+          if (map(i + iChange)(j) != '.') move(i + iChange, j)
+
+          map(i + iChange)(j) = map(i)(j)
+          map(i)(j) = '.'
+        }
+
+        if (next == '.') moveHead(iChange, 0)
+        else if (isBox(next) && ableToMove(robotI, robotJ)) {
+          move(robotI, robotJ)
+          robotI += iChange
+        }
+      }
+
       command match {
-        case '>' => moveToDirection(0, 1)
-        case '<' => moveToDirection(0, -1)
-        case 'v' => moveToDirection(1, 0)
-        case '^' => moveToDirection(-1, 0)
+        case '>' => moveHorizontally(1)
+        case '<' => moveHorizontally(-1)
+        case 'v' => moveVertically(1)
+        case '^' => moveVertically(-1)
       }
     }
 
-    commands.foreach { c =>
-      //      println(c)
-      move(c)
-      //      println(map.map(_.mkString).mkString("", "\n", "\n"))
-    }
+    commands.foreach(move)
 
-    (for { i <- 0 until height; j <- 0 until width if map(i)(j) == 'O' } yield 100 * i + j).sum
+    (for { i <- 0 until height; j <- 0 until width if map(i)(j) == '[' } yield 100 * i + j).sum
   }
 
   "Day #15 Challenge #2" should {
     "work as expected #1" in {
-      moveBoxes("""########
-                  |#..O.O.#
-                  |##@.O..#
-                  |#...O..#
-                  |#.#.O..#
-                  |#...O..#
-                  |#......#
-                  |########
-                  |
-                  |<^^>>>vv<v>>v<<""".stripMargin.split("\n")) shouldBe 2028
+      moveBoxes("""#######
+          |#...#.#
+          |#.....#
+          |#.....#
+          |#..OO.#
+          |#.@O..#
+          |#.....#
+          |#######
+          |
+          |>>v>^^^<<^^^>v""".stripMargin.split("\n")) shouldBe 921
     }
 
     "work as expected #2" in {
@@ -96,12 +132,12 @@ class Challenge2 extends AnyWordSpec with Matchers {
           |<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
           |^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
           |v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^""".stripMargin.split("\n")
-      ) shouldBe 10092
+      ) shouldBe 9021
     }
 
     "work as expected #3" in {
       val input = Utils.readInputFile(15)
-      moveBoxes(input.toArray) shouldBe 1487337
+      moveBoxes(input.toArray) shouldBe 1521952
     }
   }
 }
