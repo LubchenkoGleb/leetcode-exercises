@@ -3,6 +3,9 @@ package hlib.liubchenko.topinterview150.graph.bfs
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.annotation.tailrec
+import scala.collection.mutable
+
 class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
   def snakesAndLadders(board: Array[Array[Int]]): Int = {
     val n = board.length
@@ -17,37 +20,26 @@ class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
       (i, j)
     }
 
-    var pos = 1
-    var isLoop = false
-    while (pos != n * n && !isLoop) {
+    val stack = mutable.Stack(1)
+
+    @tailrec
+    def loop(): Unit = if (stack.nonEmpty) {
+      val pos = stack.pop()
       val (currI, currJ) = getPosition(pos)
 
-      def update(moves: Int): (Boolean, Int) = {
-        var next = pos + moves
-        var (nextI, nextJ) = getPosition(next)
-        if (board(nextI)(nextJ) != -1) {
-          distances(nextI)(nextJ) = math.min(distances(currI)(currJ) + 1, distances(nextI)(nextJ))
-          next = board(nextI)(nextJ)
-          val nextCord = getPosition(next)
-          nextI = nextCord._1; nextJ = nextCord._2
+      (1 to 6).filter(_ + pos <= n * n).foreach { shift =>
+        val next = pos + shift
+        val (nextI, nextJ) = getPosition(next)
+
+        def update(_next: Int) = {
+          val (_nextI, _nextJ) = getPosition(_next)
+          val before = distances(_nextI)(_nextJ)
+          distances(_nextI)(_nextJ) = math.min(distances(currI)(currJ) + 1, distances(_nextI)(_nextJ))
+          if (before != distances(_nextI)(_nextJ)) stack.push(_next)
         }
 
-        val before = distances(nextI)(nextJ)
-        distances(nextI)(nextJ) = math.min(distances(currI)(currJ) + 1, distances(nextI)(nextJ))
-        val updated = before != distances(nextI)(nextJ)
-
-        updated -> next
-      }
-
-      val nextMoves = (1 to 6)
-        .filter(_ + pos <= n * n)
-        .map(update)
-
-      val nextMove = nextMoves.collect { case (updated, newPos) if updated || newPos > pos => newPos }.minOption
-
-      nextMove.minOption match {
-        case Some(value) => pos = value
-        case None        => isLoop = true
+        if (board(nextI)(nextJ) != -1) update(board(nextI)(nextJ))
+        else update(next)
       }
 
       println(s"$pos($currI, $currJ)")
@@ -55,7 +47,11 @@ class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
         .map(_.map(v => if (v == Int.MaxValue) "." else v.toString).mkString(" "))
         .mkString("", "\n", "\n")
       println(distancesStr)
+
+      loop()
     }
+
+    loop()
 
     val (finalI, finalJ) = getPosition(n * n)
     val res = distances(finalI)(finalJ)
