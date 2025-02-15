@@ -5,9 +5,6 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
   def snakesAndLadders(board: Array[Array[Int]]): Int = {
-    // 1. iterate over the board
-    // 2. for each move update all possible moves
-
     val n = board.length
 
     val distances = Array.fill(n, n)(Int.MaxValue)
@@ -21,32 +18,48 @@ class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
     }
 
     var pos = 1
-    while (pos != n * n) {
+    var isLoop = false
+    while (pos != n * n && !isLoop) {
       val (currI, currJ) = getPosition(pos)
 
-      def update(movesUsed: Int)(next: Int): Boolean = {
-        val (nextI, nextJ) = getPosition(next)
+      def update(moves: Int): (Boolean, Int) = {
+        var next = pos + moves
+        var (nextI, nextJ) = getPosition(next)
+        if (board(nextI)(nextJ) != -1) {
+          distances(nextI)(nextJ) = math.min(distances(currI)(currJ) + 1, distances(nextI)(nextJ))
+          next = board(nextI)(nextJ)
+          val nextCord = getPosition(next)
+          nextI = nextCord._1; nextJ = nextCord._2
+        }
+
         val before = distances(nextI)(nextJ)
-        distances(nextI)(nextJ) = math.min(distances(currI)(currJ) + movesUsed, distances(nextI)(nextJ))
-        before != distances(nextI)(nextJ)
+        distances(nextI)(nextJ) = math.min(distances(currI)(currJ) + 1, distances(nextI)(nextJ))
+        val updated = before != distances(nextI)(nextJ)
+
+        updated -> next
       }
 
-      (1 to 6).map(_ + pos).filter(_ <= n * n).foreach { update(1) }
-      val cheat = board(currI)(currJ)
-      val isUsed = if (cheat != -1) update(0)(cheat) else false
+      val nextMoves = (1 to 6)
+        .filter(_ + pos <= n * n)
+        .map(update)
+
+      val nextMove = nextMoves.collect { case (updated, newPos) if updated || newPos > pos => newPos }.minOption
+
+      nextMove.minOption match {
+        case Some(value) => pos = value
+        case None        => isLoop = true
+      }
 
       println(s"$pos($currI, $currJ)")
       val distancesStr = distances
         .map(_.map(v => if (v == Int.MaxValue) "." else v.toString).mkString(" "))
         .mkString("", "\n", "\n")
       println(distancesStr)
-
-      if (cheat != -1 && cheat < pos && isUsed) pos = cheat
-      else pos += 1
     }
 
     val (finalI, finalJ) = getPosition(n * n)
-    distances(finalI)(finalJ)
+    val res = distances(finalI)(finalJ)
+    if (res == Int.MaxValue) -1 else res
   }
 
   "snakesAndLadders" should {
@@ -95,12 +108,21 @@ class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
     "work as expected #5" in {
       snakesAndLadders(
         Array(
-          Array(1,1,-1),
-          Array(1,1,1),
-          Array(-1,1,1)
+          Array(1, 1, -1),
+          Array(1, 1, 1),
+          Array(-1, 1, 1)
         )
       ) shouldBe -1
     }
 
+    "work as expected #6" in {
+      val input = Array(
+        Array(-1, 1, 2, -1),
+        Array(2, 13, 15, -1),
+        Array(-1, 10, -1, -1),
+        Array(-1, 6, 2, 8)
+      )
+      snakesAndLadders(input) shouldBe 2
+    }
   }
 }
