@@ -3,35 +3,73 @@ package hlib.liubchenko.topinterview150.trie
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.annotation.tailrec
+import scala.collection.mutable
+
 class _3_word_search_2 extends AnyWordSpec with Matchers {
+
+  import scala.annotation.tailrec
+  import scala.collection.mutable
+
   def findWords(board: Array[Array[Char]], words: Array[String]): List[String] = {
     val (h, w) = (board.length, board.head.length)
     val moves = List((1, 0), (-1, 0), (0, 1), (0, -1))
 
-    def check(i: Int, j: Int, rem: String, used: Set[(Int, Int)]): Boolean = rem.isEmpty || moves
-      .map { case (iShift, jShift) => (i + iShift, j + jShift) }
-      .exists { case (newI, newJ) =>
-        newI >= 0 && newI < h && newJ >= 0 && newJ < w &&
-          !used.contains((newI, newJ)) &&
-          board(newI)(newJ) == rem.head &&
-          check(newI, newJ, rem.tail, used + (newI -> newJ))
-      }
+    def check(i: Int, j: Int, trie: Trie, acc: String): List[String] = {
+      lazy val c = board(i)(j)
+      if (i >= 0 && i < h && j >= 0 && j < w && c != '#' && trie.children.contains(c)) {
+        val cTrie = trie.children(c)
 
-    def findFirst(word: String) = {
-      val checkIterator = for {
-        i <- Iterator.iterate(0, h)(_ + 1)
-        j <- Iterator.iterate(0, w)(_ + 1)
-        // _ = println(s"$word($i, $j)")
-        if board(i)(j) == word.head
-      } yield check(i, j, word.tail, Set(i -> j))
-      checkIterator.find(identity).getOrElse(false)
+        if (cTrie.isWord) List(acc + c)
+        else {
+          board(i)(j) = '#'
+          val res = moves.flatMap { case (iShift, jShift) => check(i + iShift, j + jShift, cTrie, acc + c) }
+          board(i)(j) = c
+          res
+        }
+      } else Nil
     }
 
-    val availableLetters = board.flatten.toSet
-    words
-      .filter(_.forall(availableLetters.contains))
-      .filter(findFirst)
-      .toList
+    val trie = new Trie(true)
+    words.foreach(trie.insert)
+
+    val foundWords = mutable.Set.empty[String]
+    for {
+      i <- 0 until h
+      j <- 0 until w
+      res <- check(i, j, trie, "")
+    } foundWords.add(res)
+    foundWords.toList
+  }
+
+  class Trie(var isWord: Boolean, val children: mutable.Map[Char, Trie] = mutable.Map.empty) {
+    @tailrec
+    final def insert(word: String): Unit = if (word.isEmpty) isWord = true
+    else children.getOrElseUpdate(word.head, new Trie(false)).insert(word.tail)
+
+    @tailrec
+    final def check(word: String): Boolean =
+      if (word.isEmpty) isWord
+      else children.contains(word.head) && children(word.head).check(word.tail)
+  }
+
+  "Trie" should {
+    "work as expected" in {
+      val trie = new Trie(true)
+
+      trie.insert("ab")
+      trie.insert("abc")
+      trie.insert("bcd")
+      trie.insert("abcd")
+      trie.insert("afed")
+
+      trie.check("ab") shouldBe true
+      trie.check("abc") shouldBe true
+      trie.check("abcf") shouldBe false
+      trie.check("bcd") shouldBe true
+      trie.check("afed") shouldBe true
+      trie.check("afe") shouldBe false
+    }
   }
 
   "findWords" should {
@@ -55,6 +93,18 @@ class _3_word_search_2 extends AnyWordSpec with Matchers {
         ),
         words = Array("abcb")
       ) shouldBe List.empty
+    }
+
+    "work as expected #3" in {
+      findWords(
+        board = Array(
+          Array('o', 'a', 'b', 'n'),
+          Array('o', 't', 'a', 'e'),
+          Array('a', 'h', 'k', 'r'),
+          Array('a', 'f', 'l', 'v')
+        ),
+        words = Array("oa", "oaa")
+      ) should contain theSameElementsAs List("oa", "oaa")
     }
 
     "work as expected with big example #1" in {
