@@ -3,9 +3,6 @@ package hlib.liubchenko.topinterview150.trie
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.annotation.tailrec
-import scala.collection.mutable
-
 class _3_word_search_2 extends AnyWordSpec with Matchers {
 
   import scala.annotation.tailrec
@@ -16,22 +13,22 @@ class _3_word_search_2 extends AnyWordSpec with Matchers {
     val moves = List((1, 0), (-1, 0), (0, 1), (0, -1))
 
     def check(i: Int, j: Int, trie: Trie, acc: String): List[String] = {
-      lazy val c = board(i)(j)
-      if (i >= 0 && i < h && j >= 0 && j < w && c != '#' && trie.children.contains(c)) {
-        val cTrie = trie.children(c)
+      val word = if (trie.isWord) List(acc) else Nil
 
-        if (cTrie.isWord) List(acc + c)
-        else {
-          board(i)(j) = '#'
-          val res = moves.flatMap { case (iShift, jShift) => check(i + iShift, j + jShift, cTrie, acc + c) }
-          board(i)(j) = c
-          res
-        }
+      lazy val c = board(i)(j)
+      val res = if (i >= 0 && i < h && j >= 0 && j < w && c != '#' && trie.children.contains(c)) {
+        board(i)(j) = '#'
+        val tmp = moves.flatMap { case (iShift, jShift) => check(i + iShift, j + jShift, trie.children(c), acc + c) }
+        board(i)(j) = c
+        tmp
       } else Nil
+
+      word ++ res
     }
 
-    val trie = new Trie(true)
+    val trie = new Trie(false)
     words.foreach(trie.insert)
+    println("trie initialized")
 
     val foundWords = mutable.Set.empty[String]
     for {
