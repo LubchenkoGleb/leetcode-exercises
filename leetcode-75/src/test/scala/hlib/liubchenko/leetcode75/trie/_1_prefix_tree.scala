@@ -5,34 +5,6 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class _1_prefix_tree extends AnyWordSpec with Matchers {
 
-//  class Trie() {
-//    class Tree(val v: Char, var l: Tree = null, var r: Tree = null)
-//
-//    import scala.annotation.tailrec
-//
-//    var tree: Tree = _
-//
-//    def insert(word: String): Unit = {
-//      @tailrec
-//      def insertLoop(tree: Tree, rest: String): Unit = if (rest.nonEmpty) {
-//        val h = rest.head
-//        if (h >= tree.v && tree.r == null) { tree.r = new Tree(h); insertLoop(tree.r, rest.tail) }
-//        else if (h >= tree.v) insertLoop(tree.r, rest)
-//        else if (tree.l == null) { tree.l = new Tree(h); insertLoop(tree.l, rest.tail) }
-//        else insertLoop(tree.l, rest)
-//      }
-//
-//      if (tree == null) {
-//        tree = new Tree(word.head)
-//        insertLoop(tree, word.tail)
-//      } else insertLoop(tree, word)
-//    }
-//
-//    def search(word: String): Boolean = false
-//
-//    def startsWith(prefix: String): Boolean = false
-//  }
-
   import scala.collection.mutable
 
   class Tree(var children: mutable.HashMap[Char, Tree] = mutable.HashMap.empty, var isWord: Boolean = false)

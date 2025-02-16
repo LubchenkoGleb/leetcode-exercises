@@ -3,10 +3,9 @@ package hlib.liubchenko.topinterview150.graph.bfs
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.annotation.tailrec
-import scala.collection.mutable
-
 class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
+  import scala.annotation.tailrec
+
   def snakesAndLadders(board: Array[Array[Int]]): Int = {
     val n = board.length
 
@@ -20,38 +19,30 @@ class _1_snakes_and_ladders extends AnyWordSpec with Matchers {
       (i, j)
     }
 
-    val stack = mutable.Stack(1)
-
     @tailrec
-    def loop(): Unit = if (stack.nonEmpty) {
-      val pos = stack.pop()
+    def loop(moves: List[Int]): Unit = if (moves.nonEmpty) {
+      val pos :: tail = moves
       val (currI, currJ) = getPosition(pos)
 
-      (1 to 6).filter(_ + pos <= n * n).foreach { shift =>
-        val next = pos + shift
-        val (nextI, nextJ) = getPosition(next)
+      val newMoves = (1 to 6).filter(_ + pos <= n * n).flatMap { shift =>
+        var next = pos + shift
+        var (nextI, nextJ) = getPosition(next)
 
-        def update(_next: Int) = {
-          val (_nextI, _nextJ) = getPosition(_next)
-          val before = distances(_nextI)(_nextJ)
-          distances(_nextI)(_nextJ) = math.min(distances(currI)(currJ) + 1, distances(_nextI)(_nextJ))
-          if (before != distances(_nextI)(_nextJ)) stack.push(_next)
+        val cheatMaybe = board(nextI)(nextJ)
+        if (cheatMaybe != -1) {
+          val (cheatI, cheatJ) = getPosition(cheatMaybe)
+          next = cheatMaybe; nextI = cheatI; nextJ = cheatJ
         }
 
-        if (board(nextI)(nextJ) != -1) update(board(nextI)(nextJ))
-        else update(next)
+        val before = distances(nextI)(nextJ)
+        distances(nextI)(nextJ) = math.min(distances(currI)(currJ) + 1, distances(nextI)(nextJ))
+        if (before != distances(nextI)(nextJ)) Some(next) else None
       }
 
-      println(s"$pos($currI, $currJ)")
-      val distancesStr = distances
-        .map(_.map(v => if (v == Int.MaxValue) "." else v.toString).mkString(" "))
-        .mkString("", "\n", "\n")
-      println(distancesStr)
-
-      loop()
+      loop(tail ++ newMoves)
     }
 
-    loop()
+    loop(List(1))
 
     val (finalI, finalJ) = getPosition(n * n)
     val res = distances(finalI)(finalJ)
