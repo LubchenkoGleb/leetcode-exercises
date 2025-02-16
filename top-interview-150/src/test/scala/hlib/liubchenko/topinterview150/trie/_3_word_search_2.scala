@@ -10,29 +10,29 @@ class _3_word_search_2 extends AnyWordSpec with Matchers {
 
   def findWords(board: Array[Array[Char]], words: Array[String]): List[String] = {
     val (h, w) = (board.length, board.head.length)
+    val foundWords = mutable.Set.empty[String]
     val moves = List((1, 0), (-1, 0), (0, 1), (0, -1))
 
-    def check(i: Int, j: Int, trie: Trie, acc: String): List[String] = {
+    def check(i: Int, j: Int, trie: Trie, acc: String): Unit = {
       lazy val c = board(i)(j)
       if (i >= 0 && i < h && j >= 0 && j < w && c != '#' && trie.children.contains(c)) {
         board(i)(j) = '#'
         val next = trie.children(c)
         val updatedAcc = acc + c
-        val found = (if (next.isWord) List(acc + c) else Nil) ++
-          moves.flatMap { case (iShift, jShift) => check(i + iShift, j + jShift, next, updatedAcc) }
+        if (next.isWord) foundWords.add(acc + c)
+
+        moves.foreach { case (iShift, jShift) => check(i + iShift, j + jShift, next, updatedAcc) }
         board(i)(j) = c
-        found
-      } else Nil
+      }
     }
 
     val trie = new Trie(false)
     words.foreach(trie.insert)
 
-    val foundWords = mutable.Set.empty[String]
     for {
       i <- 0 until h
       j <- 0 until w
-    } check(i, j, trie, "").foreach(foundWords.add)
+    } check(i, j, trie, "")
     foundWords.toList
   }
 
