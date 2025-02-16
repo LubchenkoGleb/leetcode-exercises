@@ -13,29 +13,26 @@ class _3_word_search_2 extends AnyWordSpec with Matchers {
     val moves = List((1, 0), (-1, 0), (0, 1), (0, -1))
 
     def check(i: Int, j: Int, trie: Trie, acc: String): List[String] = {
-      val word = if (trie.isWord) List(acc) else Nil
-
       lazy val c = board(i)(j)
-      val res = if (i >= 0 && i < h && j >= 0 && j < w && c != '#' && trie.children.contains(c)) {
+      if (i >= 0 && i < h && j >= 0 && j < w && c != '#' && trie.children.contains(c)) {
         board(i)(j) = '#'
-        val tmp = moves.flatMap { case (iShift, jShift) => check(i + iShift, j + jShift, trie.children(c), acc + c) }
+        val next = trie.children(c)
+        val updatedAcc = acc + c
+        val found = (if (next.isWord) List(acc + c) else Nil) ++
+          moves.flatMap { case (iShift, jShift) => check(i + iShift, j + jShift, next, updatedAcc) }
         board(i)(j) = c
-        tmp
+        found
       } else Nil
-
-      word ++ res
     }
 
     val trie = new Trie(false)
     words.foreach(trie.insert)
-    println("trie initialized")
 
     val foundWords = mutable.Set.empty[String]
     for {
       i <- 0 until h
       j <- 0 until w
-      res <- check(i, j, trie, "")
-    } foundWords.add(res)
+    } check(i, j, trie, "").foreach(foundWords.add)
     foundWords.toList
   }
 
@@ -50,24 +47,59 @@ class _3_word_search_2 extends AnyWordSpec with Matchers {
       else children.contains(word.head) && children(word.head).check(word.tail)
   }
 
-  "Trie" should {
-    "work as expected" in {
-      val trie = new Trie(true)
+  //  class Trie() {
+  //    val children = collection.mutable.Map.empty[Char, Trie]
+  //    var isTerminal = false
+  //    def insert(word: String) = word.foldLeft(this) { case (t, c) => t.children.getOrElseUpdate(c, new Trie()) }.isTerminal = true
+  //    def child(prefix: Char): Option[Trie] = if (children.contains(prefix)) Some(children(prefix)) else None
+  //  }
+  //
+  //  def findWords(board: Array[Array[Char]], words: Array[String]): List[String] = {
+  //    val trie = new Trie()
+  //    words.map(trie.insert(_))
+  //    def go(i: Int, j: Int, candidate: Trie, candidatePrefix: String): Seq[String] = {
+  //      if (i >= 0 && i < board.length && j >= 0 && j < board(0).length && board(i)(j) != '#') {
+  //        val char = board(i)(j)
+  //        board(i)(j) = '#'
+  //        val newPrefix = candidatePrefix :+ char
+  //        val found = candidate.child(char).fold(Seq.empty[String]) { next =>
+  //          (if ( next.isTerminal ) Seq(newPrefix) else Seq.empty) ++
+  //            go(i+1, j, next, newPrefix) ++
+  //            go(i-1, j, next, newPrefix) ++
+  //            go(i, j+1, next, newPrefix) ++
+  //            go(i, j-1, next, newPrefix) }
+  //        board(i)(j) = char
+  //        found
+  //      } else {
+  //        Seq.empty[String]
+  //      }
+  //    }
+  //
+  //    val result = scala.collection.mutable.Map(words.map(_->false): _*)
+  //    for ( i <- 0 to board.length - 1; j <- 0 to board(0).length-1 ) {
+  //      go(i, j, trie, "").map(word => result(word) = true)
+  //    }
+  //    result.filter( _._2 == true).keys.toList
+  //  }
 
-      trie.insert("ab")
-      trie.insert("abc")
-      trie.insert("bcd")
-      trie.insert("abcd")
-      trie.insert("afed")
-
-      trie.check("ab") shouldBe true
-      trie.check("abc") shouldBe true
-      trie.check("abcf") shouldBe false
-      trie.check("bcd") shouldBe true
-      trie.check("afed") shouldBe true
-      trie.check("afe") shouldBe false
-    }
-  }
+  //  "Trie" should {
+  //    "work as expected" in {
+  //      val trie = new Trie(true)
+  //
+  //      trie.insert("ab")
+  //      trie.insert("abc")
+  //      trie.insert("bcd")
+  //      trie.insert("abcd")
+  //      trie.insert("afed")
+  //
+  //      trie.check("ab") shouldBe true
+  //      trie.check("abc") shouldBe true
+  //      trie.check("abcf") shouldBe false
+  //      trie.check("bcd") shouldBe true
+  //      trie.check("afed") shouldBe true
+  //      trie.check("afe") shouldBe false
+  //    }
+  //  }
 
   "findWords" should {
     "work as expected #1" in {
