@@ -12,7 +12,12 @@ class _9_longest_consecutive_sequence extends AnyWordSpec with Matchers {
     @tailrec
     def check(element: Int, acc: Int = 1): Int = if (set.contains(element + 1)) check(element + 1, acc + 1) else acc
 
-    set.filterNot(n => set.contains(n - 1)).map(check(_)).maxOption.getOrElse(0)
+    // Shorter FP Solution but worth performance
+    // set.filterNot(n => set.contains(n - 1)).map(check(_)).maxOption.getOrElse(0)
+
+    var max = 0
+    set.foreach { n => if (!set.contains(n - 1)) max = math.max(max, check(n)) }
+    max
   }
 
   "longestConsecutive" should {
