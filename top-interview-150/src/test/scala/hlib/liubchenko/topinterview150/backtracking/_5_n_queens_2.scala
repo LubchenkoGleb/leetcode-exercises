@@ -3,37 +3,41 @@ package hlib.liubchenko.topinterview150.backtracking
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+
 class _5_n_queens_2 extends AnyWordSpec with Matchers {
+  import scala.collection.mutable
+
   def totalNQueens(n: Int): Int = {
-    val board = Array.fill(n, n)(0)
+    var res = 0
+    val col = mutable.Set.empty[Int]
+    val positiveDiagonal = mutable.Set.empty[Int]
+    val negativeDiagonal = mutable.Set.empty[Int]
 
-    def updateCollect(x: Int, y: Int) =
-      if (x >= 0 && x < n && y >= 0 && y < n && board(x)(y) == 0) {
-        board(x)(y) = 1; List((x, y))
-      }
-      else Nil
+    def check(i: Int, j: Int): Boolean =
+      !col.contains(j) && !positiveDiagonal.contains(i + j) && !negativeDiagonal.contains(i - j)
 
-    def mark(i: Int, j: Int): Seq[(Int, Int)] = (0 until n).flatMap { k =>
-      updateCollect(i, k) ++
-        updateCollect(k, j) ++
-        updateCollect(i + k, j + k) ++
-        updateCollect(i + k, j - k) ++
-        updateCollect(i - k, j - k) ++
-        updateCollect(i - k, j + k)
+    def mark(i: Int, j: Int): Unit = {
+      col.add(j)
+      positiveDiagonal.add(i + j)
+      negativeDiagonal.add(i - j)
     }
 
-    def revert(points: Seq[(Int, Int)]): Unit = points.foreach { case (i, j) => board(i)(j) = 0 }
+    def revert(i: Int, j: Int): Unit = {
+      col.remove(j)
+      positiveDiagonal.remove(i + j)
+      negativeDiagonal.remove(i - j)
+    }
 
-    // @formatter:off
-    def loop(i: Int): Int = if (i == n) 1 else (0 until n).collect { case j if board(i)(j) == 0 =>
-      val affected = mark(i, j)
-      val res = loop(i + 1)
-      revert(affected)
-      res
-    }.sum
-    // @formatter:on
+    def loop(i: Int): Unit = if (i == n) res += 1
+    else
+      (0 until n).filter(check(i, _)).foreach { j =>
+        mark(i, j)
+        loop(i + 1)
+        revert(i, j)
+      }
 
     loop(0)
+    res
   }
 
   "totalNQueens" should {
