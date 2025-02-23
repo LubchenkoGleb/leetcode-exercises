@@ -4,7 +4,7 @@ import hlib.liubchenko.topinterview150.binary_tree.TreeNode
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class _9_binary_search_tree_iterator extends AnyWordSpec with Matchers {
+class _12_binary_search_tree_iterator extends AnyWordSpec with Matchers {
   import scala.collection.mutable
 
   class BSTIterator(_root: TreeNode) {
