@@ -14,9 +14,10 @@ class _2_search_a_2d_matrix extends AnyWordSpec with Matchers {
     def searchRow(from: Int, to: Int): Int =
       if (from == to) from
       else {
-        val half = from + math.max(1, (to - from) / 2)
-        if (matrix(half)(0) <= target) searchRow(half, to)
-        else searchRow(from, half - 1)
+        val half = from + ((to - from) / 2) + 1
+        // println(s"from: $from, to: $to, half: $half")
+        if (matrix(half)(0) > target) searchRow(from, half - 1)
+        else searchRow(half, to)
       }
     val row = searchRow(0, m - 1)
 
@@ -24,6 +25,7 @@ class _2_search_a_2d_matrix extends AnyWordSpec with Matchers {
     def checkRow(from: Int, to: Int): Boolean = if (from == to) matrix(row)(from) == target
     else {
       val half = from + ((to - from) / 2)
+      // println(s"from: $from, to: $to, half: $half")
       if (matrix(row)(half) < target) checkRow(half + 1, to)
       else checkRow(from, half)
     }
