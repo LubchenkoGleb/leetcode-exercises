@@ -8,38 +8,30 @@ class _3_rotate_image extends AnyWordSpec with Matchers {
   def rotate(matrix: Array[Array[Int]]): Unit = {
     val n = matrix.length
 
-    def rotateLevel(l: Int): Unit = (l until n - l - 1).foreach(rotateElement(l, _))
+    def rotateElement(i: Int, j: Int): Unit = {
+      val positionInTheLevel = j - i
+      val border = n - i - 1
 
-    def rotateElement(l: Int, j: Int): Unit = {
-      println(s"($l, $j) ${matrix(l)(j)}")
-      val num = j - l
+      val (_0i, _0j) = (i, j)
+      val (_90i, _90j) = (i + positionInTheLevel, border)
+      val (_180i, _180j) = (border, border - positionInTheLevel)
+      val (_270i, _270j) = (border - positionInTheLevel, i)
 
-      val (_0i, _0j) = (l, j)
       val _0 = matrix(_0i)(_0j)
-
-      val (_90i, _90j) = (l + num, n - l - 1)
       val _90 = matrix(_90i)(_90j)
-
-      val (_180i, _180j) = (n - l - 1, n - l - 1 - num)
       val _180 = matrix(_180i)(_180j)
-
-      val (_270i, _270j) = (n - l - 1 - num, l)
       val _270 = matrix(_270i)(_270j)
 
       matrix(_90i)(_90j) = _0
-      println(matrix.map(_.mkString(" ")).mkString("\n", "\n", ""))
-
       matrix(_180i)(_180j) = _90
-      println(matrix.map(_.mkString(" ")).mkString("\n", "\n", ""))
-
       matrix(_270i)(_270j) = _180
-      println(matrix.map(_.mkString(" ")).mkString("\n", "\n", ""))
-
       matrix(_0i)(_0j) = _270
-      println(matrix.map(_.mkString(" ")).mkString("\n", "\n", "\n"))
     }
 
-    (0 until n / 2).foreach(rotateLevel)
+    for {
+      i <- 0 until n / 2
+      j <- i until n - i - 1
+    } rotateElement(i, j)
   }
 
   "rotate" should {
