@@ -1,4 +1,4 @@
-package hlib.liubchenko.topinterview150.multi_dimensional_db
+package hlib.liubchenko.topinterview150.multi_dimensional_dp
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
