@@ -5,37 +5,16 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class _15_candy extends AnyWordSpec with Matchers {
   def candy(ratings: Array[Int]): Int = {
-    if (ratings.length == 1) return 1
+    val n = ratings.length
+    if (n == 1) return 1
+    val candies = Array.fill(n)(1)
 
-    val candies = Array.fill(ratings.length)(1)
-
-    ratings.zipWithIndex.sliding(2).foreach { case Array((aV, aI), (bV, bI)) =>
-      if (bV > aV) candies(bI) = candies(aI) + 1
+    ratings.indices.sliding(2).foreach { case Seq(aI, bI) =>
+      if (ratings(bI) > ratings(aI)) candies(bI) = candies(aI) + 1
     }
-//    println("front: " + candies.mkString(", "))
-    ratings.zipWithIndex.reverse.sliding(2).foreach { case Array((aV, aI), (bV, bI)) =>
-      if (aV < bV) candies(bI) = math.max(candies(bI), candies(aI) + 1)
+    ratings.indices.reverse.sliding(2).foreach { case Seq(aI, bI) =>
+      if (ratings(aI) < ratings(bI)) candies(bI) = math.max(candies(bI), candies(aI) + 1)
     }
-//    println("reverse: " + candies.mkString(", "))
-
-//    ratings.zipWithIndex.sliding(3).foreach { case Array((aV, aI), (bV, bI), (cV, cI)) =>
-////      if (aV > bV) candies(aI) += 1
-////      if (aV < bV) candies(bI) = candies(aI) + 1
-////      if (bV > cV) candies(bI) = candies(cI) + 1
-////      if (cV > bV) candies(cI) = candies(bI) + 1
-//      if (aV <= bV && bV >= cV) candies(bI) = candies(aI) + 1
-//      if (aV > bV && bV < cV) { candies(aI) = math.max(candies(aI), 2); candies(bI) = 1; candies(cI) = 2 }
-//
-//      println(candies.mkString(", "))
-//    }
-
-//    println("before: " + candies.mkString(", "))
-
-//    candies.zipWithIndex.sliding(3).foreach { case Array((aV, aI), (bV, bI), (cV, cI)) =>
-//      if (aV < bV && bV > cV) candies(bI) = math.max(aV, cV) + 1
-//    }
-
-//    println("after: " + candies.mkString(", "))
 
     candies.sum
   }
@@ -47,6 +26,7 @@ class _15_candy extends AnyWordSpec with Matchers {
       candy(Array(1, 3, 2, 2, 1)) shouldBe 7 // 1, 2, 1, 2, 1
       candy(Array(1, 3, 4, 5, 2)) shouldBe 11 // 1, 2, 3, 4, 1
       candy(Array(1, 2, 87, 87, 87, 2, 1)) shouldBe 13 // 1, 2, 3, 1, 3, 2, 1
+      candy(Array(1, 2, 3, 5, 4, 3, 2, 1, 4, 3, 2, 1)) shouldBe 31 // 1, 2, 3, 1, 3, 2, 1
     }
   }
 }
