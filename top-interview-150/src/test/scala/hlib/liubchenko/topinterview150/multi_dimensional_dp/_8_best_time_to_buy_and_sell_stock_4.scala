@@ -11,17 +11,14 @@ class _8_best_time_to_buy_and_sell_stock_4 extends AnyWordSpec with Matchers {
     for { price <- prices; deal <- 1 to k } {
       buys(deal) = math.min(buys(deal), price - profits(deal - 1))
       profits(deal) = math.max(profits(deal), price - buys(deal))
-      println(s"price: $price")
-      println(s"buys: ${buys.mkString(", ")}")
-      println(s"profits: ${profits.mkString(", ")}")
     }
     profits(k)
   }
 
   "maxProfit" should {
     "work as expected" in {
-//      maxProfit(k = 2, prices = Array(2, 4, 1)) shouldBe 2
-//      maxProfit(k = 2, prices = Array(3, 2, 6, 5, 0, 3)) shouldBe 7
+      maxProfit(k = 2, prices = Array(2, 4, 1)) shouldBe 2
+      maxProfit(k = 2, prices = Array(3, 2, 6, 5, 0, 3)) shouldBe 7
       maxProfit(k = 5, prices = Array(70, 4, 83, 56, 94, 72, 78, 43, 2, 86, 65, 100, 94, 56, 41, 66, 3)) shouldBe 261
     }
 
